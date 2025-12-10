@@ -1,0 +1,67 @@
+############################################
+# Terraform
+############################################
+
+# Local Terraform directories
+.terraform/
+.terraform.lock.hcl
+
+# Terraform state files
+terraform.tfstate
+terraform.tfstate.*
+*.tfstate
+*.tfstate.*
+
+# Terraform plan files
+tfplan
+
+# Local configuration (NEVER commit secrets)
+terraform.tfvars
+*.tfvars
+
+############################################
+# Lambda build / Python packaging
+############################################
+
+# Build folders
+build/
+build-lambda/
+package/
+dist/
+__pycache__/
+
+# Zip files (NEVER commit bundled Lambda)
+*.zip
+lambda.zip
+
+# Python virtual environments
+venv/
+env/
+.venv/
+.env/
+
+# Python cache
+*.pyc
+*.pyo
+*.pyd
+
+############################################
+# VS Code / Editor settings
+############################################
+.vscode/
+.settings/
+.idea/
+
+############################################
+# OS files
+############################################
+.DS_Store
+Thumbs.db
+desktop.ini
+
+############################################
+# Logs / temp
+############################################
+*.log
+logs/
+tmp/
