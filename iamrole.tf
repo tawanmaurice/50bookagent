@@ -1,10 +1,10 @@
 #############################################
-# IAM role + policies for all 50 agents
+# IAM role + policies for Book Agents
 #############################################
 
-# Execution role for all Lambda functions
+# Execution role for all book-related Lambda functions
 resource "aws_iam_role" "lambda_exec" {
-  name = "speaking-agent-lambda-role-v3-multi"
+  name = "book-agents-lambda-role-v1"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -28,13 +28,13 @@ resource "aws_iam_role_policy_attachment" "lambda_basic_logs" {
 
 # App-specific permissions: DynamoDB + SES
 resource "aws_iam_role_policy" "lambda_dynamodb_policy" {
-  name = "speaking-agent-lambda-app-policy-v3-multi"
+  name = "book-agents-lambda-app-policy-v1"
   role = aws_iam_role.lambda_exec.id
 
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
-      # DynamoDB access for speaking-leads-v3-multi
+      # DynamoDB access for book-leads-v1
       {
         Effect = "Allow"
         Action = [
@@ -44,7 +44,7 @@ resource "aws_iam_role_policy" "lambda_dynamodb_policy" {
           "dynamodb:Scan",
           "dynamodb:Query"
         ]
-        Resource = "arn:aws:dynamodb:us-east-1:276671279137:table/speaking-leads-v3-multi"
+        Resource = aws_dynamodb_table.book_leads.arn
       },
 
       # SES send permissions for your verified identity

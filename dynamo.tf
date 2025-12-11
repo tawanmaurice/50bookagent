@@ -1,5 +1,9 @@
-resource "aws_dynamodb_table" "speaking_leads" {
-  name         = "speaking-leads-v3-multi"
+#############################################
+# DynamoDB table for Book Agents
+#############################################
+
+resource "aws_dynamodb_table" "book_leads" {
+  name         = "book-leads-v1"
   billing_mode = "PAY_PER_REQUEST"
 
   hash_key = "id"
@@ -7,5 +11,11 @@ resource "aws_dynamodb_table" "speaking_leads" {
   attribute {
     name = "id"
     type = "S"
+  }
+
+  tags = {
+    Project     = "book-agents-50"
+    Environment = "prod"
+    Owner       = "Tawan"
   }
 }
