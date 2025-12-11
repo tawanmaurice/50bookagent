@@ -1,212 +1,163 @@
-Speaking Agent (Autonomous Conference Researcher)
+Campus & Corporate Outreach Automation System (AWS + Terraform + Lambda)
+A fully automated, multi-agent cloud architecture for large-scale data collection, email workflows, and reporting.
 
-A fully automated pipeline that discovers student leadership conferences, structures the information, and stores it in DynamoDB.
+This project is a production-grade AWS automation system designed to run dozens of independent “agents” that scrape targeted web pages, extract leads, store structured data, and send automated outreach and weekly analytics reports.
 
-🚀 Overview
+It demonstrates my ability to design, deploy, and maintain scalable, serverless cloud infrastructure using:
 
-The Speaking Agent is an autonomous research system that automatically finds student leadership conferences, student leadership programs, and large-scale student leadership events hosted by colleges and universities.
+AWS Lambda (Python)
 
-Once configured, the system runs completely on its own — no human input required.
+AWS DynamoDB (schema design & storage)
 
-On each scheduled run, it:
+AWS SES (automated email workflows)
 
-Searches .edu websites for new conferences
+AWS EventBridge (CloudWatch Events) (scheduled cron automation)
 
-Structures the information using OpenAI
+Terraform (infrastructure-as-code for full reproducibility)
 
-Extracts contact emails (when available)
+Python data processing, scraping, and reporting
 
-Saves the results into a DynamoDB table
+Cloud security, IAM policies, and least privilege
 
-Updates past items with seen_count, status, and new emails
+🚀 Project Overview
 
-This creates a continuous stream of fresh speaking opportunities for future speaking engagements.
+This system automates three major workflows:
 
-⚙️ How It Works (High-Level)
-1. EventBridge Schedule (2x per day)
+1. Multi-Agent Web Scraping
 
-Triggers the Lambda with a predefined topic like:
+50+ AWS Lambda agents run daily, each targeting a different segment—campus bookstores, faculty groups, student affairs, academic advisors, etc.
 
-student leadership conferences and large-scale student leadership programs...
+Each agent:
 
+Performs a tailored Google search query
 
-This ensures the agent runs automatically every day.
+Fetches and parses pages
 
-2. Google Custom Search Engine (CSE)
+Extracts emails & relevant metadata
 
-The Lambda performs a 3-page Google search:
+Saves data to DynamoDB
 
-Page 1 → first 10 results
+Avoids duplicates via hashing & key checks
 
-Page 2 → next 10 results
+Self-logs to CloudWatch for debugging
 
-Page 3 → next 10 results
+2. Automated Daily Outreach
 
-Up to 30 results per run.
+A dedicated Lambda function runs a scheduled outreach campaign.
 
-All results are filtered by:
+Sends personalized emails
 
-site:.edu
-student leadership conference
+Uses SES for delivery
 
-3. OpenAI Structuring
+Only activates after GO_LIVE_DATE
 
-Google’s raw search output is messy.
-OpenAI transforms it into clean JSON with fields like:
+Includes throttling & safety logic
 
-conference_name
+Supports TEST_MODE for dry runs
 
-school_name
+This enables safe A/B testing and error-free scaling to thousands of contacts.
 
-organization
+3. Weekly Analytics & Reporting
 
-location
+A Lambda function automatically:
 
-audience
+Reviews engagement for the past 7 days
 
-date
+Counts email replies
 
-url
+Generates a formatted report
 
-contact_email
+Emails the analytics summary
 
-notes
+Logs metrics to CloudWatch
 
-Up to 8–10 conferences per run.
+This mimics real-world marketing automation tools but is built entirely serverlessly.
 
-4. Email Extraction
+🧱 AWS Architecture Diagram (Text Summary)
+EventBridge (Schedules) ---> Lambda Agents (Scrapers)
+                                    |
+                                    v
+                              DynamoDB Table
+                                    |
+                                    v
+                           Daily Outreach Lambda
+                                    |
+                                    v
+                                   SES
+                                    |
+                                    v
+                     Weekly Analytics Lambda ---> Email Reports
 
-For each conference (up to 5 per run):
 
-The agent fetches the conference webpage
+This is a true serverless pipeline supporting enterprise-level automation.
 
-Scans the HTML for any valid email address
+🛠 Tech Stack
+Cloud & Infrastructure
 
-Adds it as contact_email
+AWS Lambda
 
-If no email is found, the record still saves — you can follow up manually.
+AWS EventBridge
 
-5. DynamoDB Storage
+AWS DynamoDB
 
-Each conference is saved with:
+AWS SES
 
-id (stable, used to avoid duplicates)
+AWS CloudWatch
 
-conference_name
+Terraform (complete IaC)
 
-url
+IAM (least privilege role design)
 
-contact_email
+Languages / Tools
 
-status (default: NEW)
+Python 3
 
-seen_count (increments every time the conference appears)
+Requests, BeautifulSoup, urllib
 
-created_at
+Logging & error handling
 
-updated_at
+Git/GitHub for version control
 
-This allows DynamoDB to serve as a lead database / mini CRM.
+📦 Key Terraform Components
+Fully declarative modules:
 
-🗂 Example DynamoDB Item
-{
-  "id": "vacuho-student-leadership-conference",
-  "conference_name": "VACUHO Student Leadership Conference",
-  "school_name": "Virginia Community Colleges",
-  "location": "Virginia, USA",
-  "url": "https://vacuho.org/student-leadership-conference",
-  "contact_email": "info@vacuho.org",
-  "status": "NEW",
-  "seen_count": 3,
-  "created_at": "2025-12-01T14:00:00Z",
-  "updated_at": "2025-12-02T14:00:00Z"
-}
+lambda.tf – Lambda definitions & environment management
 
-📦 Files Included
-lambda_function.py
+cloudwatch.tf – 50+ cron schedules
 
-The main logic:
+dynamo.tf – DynamoDB schema
 
-Google search (multi-page)
+iamrole.tf – IAM roles, permissions, logging
 
-OpenAI conference structuring
+variables.tf – API keys & configs
 
-Email extraction
+.gitignore – Production-ready packaging rules
 
-DynamoDB upsert logic
+All infrastructure is reproducible with:
 
-Full orchestration pipeline
+terraform init
+terraform apply
 
-main.tf / variables.tf / outputs.tf (optional)
+💼 Why This Project Matters for Recruiters
 
-Terraform infrastructure (Lambda, IAM roles, EventBridge Schedule, DynamoDB, etc.)
+This project demonstrates that I can:
 
-🧠 Why This Agent Exists
+✔ Build production-level cloud automations
+✔ Write infrastructure-as-code using Terraform
+✔ Deploy and maintain AWS Lambda systems
+✔ Handle parallel asynchronous workloads
+✔ Create robust logging, testing, and monitoring
+✔ Follow best practices for IAM, security, ZIP packaging, and SES
+✔ Architect solutions that scale automatically and cost pennies
 
-For speakers who want to book more student leadership events, it is extremely difficult to manually:
+This is the level of work expected from:
 
-Search dozens of universities daily
+Cloud Engineers
 
-Identify which events are relevant
+DevOps Engineers
 
-Extract contact information
+Backend Engineers (Python / Serverless)
 
-Track leads over time
+Automation Engineers
 
-This autonomous agent does all of that automatically.
-
-It becomes your:
-
-24/7 tireless research assistant
-finding real student leadership conferences for you
-while you sleep.
-
-🔮 Future Enhancements (Optional)
-
-These features can be added later:
-
-1. Outreach Email Generator Lambda
-
-Reads NEW conferences → drafts personalized outreach emails for you.
-
-2. Daily/Weekly Report Email
-
-Automatically sends you a summary of:
-
-New conferences found
-
-Emails collected
-
-Top opportunities
-
-Repeated high-value leads
-
-3. Multi-topic Rotation
-
-Searches different slices such as:
-
-Community colleges
-
-HBCUs
-
-West Coast programs
-
-Leadership retreats
-
-Orientation leader conferences
-
-🏁 Summary
-
-This agent is fully autonomous, hands-free, and built specifically for student leadership speaking opportunities. You set it once — and it continuously discovers relevant events, enriches them, and stores them for outreach.
-
-Perfect for speakers who want:
-
-A continuous pipeline
-
-Without manual research
-
-Without guessing
-
-Without burnout
-
-You now have a fully automated speaking-opportunity engine.
+Solutions Architects
